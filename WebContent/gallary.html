@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css"
+	rel="stylesheet" type="text/css" />
+	<link href="./fotorama.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+<script type="text/javascript" src="./fotorama.js"></script>
+<script type = "text/javascript">
+function search(){
+	$.ajax({
+	    url : "http://apis.daum.net/search/image",
+	    dataType : "jsonp",
+	    type : "post",
+	    jsonp : "callback",
+	    data : {
+	        apikey : "3803541fce89370275fcefe628ed9f9acafe223e", 
+	        q : $("#q").val(),             // search keyword
+	        result : "20",                 // result set length
+	        pageno : $("#pageno").val(),   // pageNo
+	        output : "json"                // JSONP type format json
+	    },
+	    success : function(r){
+	        var list = r.channel.item;
+	        var fr = "";
+	        for(var i in list) {
+	        	fr += "<a href=\""+ list[i].image +"\"><img src=\""+ list[i].thumbnail +"\"></a>";
+	        }
+	        fr = "<div>" + fr + "</div>";
+        	$("#fr").html(fr);
+        	$("#fr div").fotorama({width:720,height:480});
+
+        	$("#pageno").val(parseInt($("#pageno").val())+1);
+
+	    }
+	});
+	return false;
+}
+
+$(function() {
+	$("#go").click(search);
+	$("#q").bind("change", function(){$("#pageno").val(1);});
+	$("#q").live("keypress", function(event) {
+		if (event.which === 13) {
+			search();
+		}
+	})
+});
+</script>
+
+</head>
+<body>
+<form onsubmit="return search()">
+		<input id="q" type="text" value="snsd"> 
+		<input id="pageno" type="text" value="1"> 
+		<input id="go" type="button" value="Go">
+	</form>
+	<hr>
+<div id="fr">
+</div>
+</body>
+</html>
